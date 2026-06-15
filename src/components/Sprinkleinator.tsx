@@ -93,10 +93,10 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
     const width = mountRef.current.clientWidth || 300;
     const height = mountRef.current.clientHeight || 280;
 
-    // Create offline canvas for video export processing
+    // Create offline canvas for video export processing (small = fast upload)
     const rc = document.createElement('canvas');
-    rc.width = 800;
-    rc.height = 800;
+    rc.width = 480;
+    rc.height = 480;
     recordCanvasRef.current = rc;
 
     const scene = new THREE.Scene();
@@ -753,7 +753,7 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
       isRecordingRef.current = true;
       autoSpinRef.current = true;
       recordedChunksRef.current = [];
-      const stream = recordCanvasRef.current.captureStream(30);
+      const stream = recordCanvasRef.current.captureStream(15);
       let mimeType = 'video/webm';
       if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
         mimeType = 'video/webm; codecs=vp9';
@@ -777,7 +777,7 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
       
       setTimeout(() => {
         recorder.stop();
-      }, 3000);
+      }, 2500);
     }
 
     setTimeout(() => {
@@ -808,25 +808,28 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
     setSubmitStatus('sending');
     
     try {
-      let uploadedVideoUrl = videoUrl;
+      let uploadedVideoUrl = null;
       let videoStorageKey = null;
-      
-      // Upload video to Netlify Blob Storage if exists
-      if (videoUrl && recordCanvasRef.current) {
+
+      // Upload video to Netlify Blob Storage if we have a temporary browser blob URL.
+      // We must convert the temporary blob URL into a persistent stored URL.
+      if (videoUrl && videoUrl.startsWith('blob:')) {
         try {
           const videoBlob = await fetch(videoUrl).then(r => r.blob());
-          const reader = new FileReader();
-          const base64Promise = new Promise((resolve) => {
-            reader.onloadend = () => resolve(reader.result as string);
-          });
-          reader.readAsDataURL(videoBlob);
-          const base64 = await base64Promise;
-          
           const uploadResult = await uploadVideo(videoBlob, 'donut-video.webm');
           uploadedVideoUrl = uploadResult.url;
           videoStorageKey = uploadResult.storageKey;
         } catch (uploadErr) {
-          console.error('Video upload failed, using local URL:', uploadErr);
+          console.error('Video upload failed, falling back to no video:', uploadErr);
+        }
+      } else if (videoUrl) {
+        // Already a persistent URL; keep it (but still try to extract a storage key if present).
+        uploadedVideoUrl = videoUrl;
+        try {
+          const keyMatch = new URL(videoUrl, window.location.href).searchParams.get('key');
+          if (keyMatch) videoStorageKey = keyMatch;
+        } catch {
+          // ignore parse errors
         }
       }
       
@@ -846,6 +849,9 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
       });
       
       setSubmitStatus('success');
+      // Keep the local video URL in sync with the persisted one.
+      setVideoUrl(uploadedVideoUrl);
+
       if (onSubmit) {
         onSubmit({
           id: result.id,
@@ -858,7 +864,8 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
           instagramHandle: instagramHandle || null,
           tiktokHandle: tiktokHandle || null,
           design: design,
-          videoUrl: uploadedVideoUrl,
+          videoUrl: result.videoUrl || uploadedVideoUrl,
+          videoStorageKey: videoStorageKey || result.videoStorageKey || null,
           likes: 0,
           createdAt: new Date().toISOString(),
           status: 'approved'

@@ -6,7 +6,7 @@ import { motion } from 'motion/react';
 
 interface ShowcaseProps {
   donuts: CommunityDonut[];
-  onLike: (id: string) => void;
+  onLike: (id: string, newLikes?: number) => void;
 }
 
 export default function CommunityShowcase({ donuts, onLike }: ShowcaseProps) {

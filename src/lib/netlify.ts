@@ -39,7 +39,9 @@ export async function fetchSubmissions(): Promise<DonutSubmission[]> {
   try {
     const response = await fetch(`${API_BASE}/get-submissions`);
     if (!response.ok) {
-      throw new Error('Failed to fetch submissions');
+      const error = await response.json();
+      console.error('fetchSubmissions server error:', error);
+      throw new Error(error.details || error.error || 'Failed to fetch submissions');
     }
     return await response.json();
   } catch (error) {
@@ -63,7 +65,7 @@ export async function submitDonut(data: {
   design: DonutSubmission['design'];
   videoUrl?: string | null;
   videoStorageKey?: string;
-}): Promise<{ id: string; status: string }> {
+}): Promise<{ id: string; status: string; videoUrl: string | null; videoStorageKey: string | null }> {
   try {
     const response = await fetch(`${API_BASE}/submit-donut`, {
       method: 'POST',
@@ -75,7 +77,8 @@ export async function submitDonut(data: {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to submit donut');
+      console.error('submitDonut server error:', error);
+      throw new Error(error.details || error.error || 'Failed to submit donut');
     }
 
     return await response.json();
@@ -154,7 +157,8 @@ export async function uploadVideo(videoBlob: Blob, filename: string): Promise<{ 
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to upload video');
+      console.error('uploadVideo server error:', error);
+      throw new Error(error.details || error.error || 'Failed to upload video');
     }
 
     return await response.json();

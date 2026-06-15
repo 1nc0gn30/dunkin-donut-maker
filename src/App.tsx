@@ -135,7 +135,7 @@ export default function App() {
           <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8">
             
             {/* Netlify */}
-            <a href="https://www.netlify.com" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2">
+            <a href="https://join.netlify.com/d8a2zdtel9gy-w6zrwt" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2">
               <div className="w-12 h-12 md:w-14 md:h-14 bg-[#00C7B7] rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
                 <svg viewBox="0 0 24 24" className="w-6 h-6 md:w-8 md:h-8 text-white" fill="currentColor">
                   <path d="M12 0L23.066 21H0L12 0Z"/>
@@ -208,7 +208,7 @@ export default function App() {
             <span className="text-gray-300">•</span>
             <a href="https://dunkin-donut-maker.netlify.app" className="hover:text-[#FF671F] transition-colors">Community</a>
             <span className="text-gray-300">•</span>
-            <a href="https://www.netlify.com" className="hover:text-[#00C7B7] transition-colors">Deployed on Netlify</a>
+            <a href="https://join.netlify.com/d8a2zdtel9gy-w6zrwt" className="hover:text-[#00C7B7] transition-colors">Deployed on Netlify</a>
           </div>
         </div>
 

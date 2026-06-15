@@ -1,5 +1,5 @@
 import { Handler } from '@netlify/functions';
-import { getStore } from '@netlify/blobs';
+import { supabase } from './lib/supabase';
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== 'GET' && event.httpMethod !== 'OPTIONS') {
@@ -22,62 +22,29 @@ export const handler: Handler = async (event) => {
   }
 
   try {
-    const store = getStore({
-      name: 'donut-videos',
-    });
+    const { data: publicUrlData } = supabase.storage
+      .from('donut-videos')
+      .getPublicUrl(key);
 
-    const blob = await store.get(key, { type: 'arrayBuffer' });
-    if (!blob) {
+    if (!publicUrlData?.publicUrl) {
       return { statusCode: 404, body: JSON.stringify({ error: 'Video not found' }) };
     }
 
-    const buffer = Buffer.from(blob);
-    const totalLength = buffer.length;
-    const contentType = 'video/webm';
-    const rangeHeader = event.headers?.range || event.multiValueHeaders?.range?.[0];
-
-    if (rangeHeader) {
-      const match = rangeHeader.match(/bytes=(\d+)-(\d*)/);
-      if (match) {
-        const start = parseInt(match[1], 10);
-        const end = match[2] ? parseInt(match[2], 10) : totalLength - 1;
-        const chunk = buffer.slice(start, end + 1);
-        return {
-          statusCode: 206,
-          headers: {
-            ...corsHeaders,
-            'Content-Type': contentType,
-            'Content-Length': String(chunk.length),
-            'Content-Range': `bytes ${start}-${end}/${totalLength}`,
-            'Accept-Ranges': 'bytes',
-            'Cache-Control': 'public, max-age=31536000, immutable',
-          },
-          body: chunk.toString('base64'),
-          isBase64Encoded: true,
-        };
-      }
-    }
-
+    // Redirect to Supabase public URL (supports range requests natively)
     return {
-      statusCode: 200,
+      statusCode: 302,
       headers: {
         ...corsHeaders,
-        'Content-Type': contentType,
-        'Content-Length': String(totalLength),
-        'Accept-Ranges': 'bytes',
+        Location: publicUrlData.publicUrl,
         'Cache-Control': 'public, max-age=31536000, immutable',
       },
-      body: buffer.toString('base64'),
-      isBase64Encoded: true,
+      body: '',
     };
-  } catch (err) {
+  } catch (err: any) {
     console.error('Get video error:', err);
     return {
       statusCode: 500,
-      body: JSON.stringify({
-        error: 'Failed to fetch video',
-        details: err instanceof Error ? err.message : String(err),
-      }),
+      body: JSON.stringify({ error: 'Failed to fetch video', details: err.message }),
     };
   }
 };

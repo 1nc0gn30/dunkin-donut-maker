@@ -49,6 +49,7 @@ export interface CommunityDonut {
   tiktokHandle?: string | null;
   design: DonutDesign;
   videoUrl?: string | null;
+  videoStorageKey?: string | null;
   likes: number;
   createdAt: string;
   status: 'pending' | 'approved' | 'rejected';
