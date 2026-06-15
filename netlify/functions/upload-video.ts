@@ -6,44 +6,23 @@ export const handler: Handler = async (event) => {
   }
 
   try {
-    // Handle FormData from frontend
-    const contentType = event.headers['content-type'] || event.headers['Content-Type'] || '';
-    let videoData: Buffer | null = null;
-    let filename = 'donut-video.webm';
-    let mimeType = 'video/webm';
+    // Parse JSON body with base64 video data
+    const body = JSON.parse(event.body || '{}');
+    const { videoBase64, filename } = body;
 
-    if (contentType.includes('multipart/form-data')) {
-      // Parse FormData (Netlify Functions provides multiValueParts for multipart)
-      const parts = event.multiValueParts;
-      if (!parts || !parts.video) {
-        return {
-          statusCode: 400,
-          body: JSON.stringify({ error: 'No video data provided' }),
-        };
-      }
-      const videoPart = parts.video[0];
-      videoData = Buffer.from(videoPart.data, 'base64');
-      filename = videoPart.filename || 'donut-video.webm';
-      mimeType = videoPart.contentType || 'video/webm';
-    } else {
-      // Fallback to JSON body (for backwards compatibility)
-      const body = JSON.parse(event.body || '{}');
-      const { videoBase64, filename: fname } = body;
-
-      if (!videoBase64) {
-        return {
-          statusCode: 400,
-          body: JSON.stringify({ error: 'No video data provided' }),
-        };
-      }
-      videoData = Buffer.from(videoBase64.split(',')[1], 'base64');
-      filename = fname || 'donut-video.webm';
+    if (!videoBase64) {
+      console.error('No video data provided in request');
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'No video data provided' }),
+      };
     }
 
     // Generate unique key
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 15);
-    const storageKey = `videos/${timestamp}-${randomId}-${filename}`;
+    const originalFilename = filename || 'donut-video.webm';
+    const storageKey = `videos/${timestamp}-${randomId}-${originalFilename}`;
 
     // In production, this would upload to Netlify Blob Storage
     // For local dev, return a placeholder URL
@@ -68,15 +47,23 @@ export const handler: Handler = async (event) => {
       consistency: 'strong',
     });
 
-    await store.set(storageKey, videoData, {
-      contentType: mimeType,
+    // Strip data URL prefix if present (e.g., "data:video/webm;base64,")
+    const base64Data = videoBase64.includes(',') 
+      ? videoBase64.split(',')[1] 
+      : videoBase64;
+    
+    const buffer = Buffer.from(base64Data, 'base64');
+    await store.set(storageKey, buffer, {
+      contentType: 'video/webm',
       metadata: {
         uploadedAt: new Date().toISOString(),
-        originalName: filename,
+        originalName: originalFilename,
       },
     });
 
     const url = `/.netlify/blobs/donut-videos/${storageKey}`;
+
+    console.log('Video uploaded successfully:', url);
 
     return {
       statusCode: 200,

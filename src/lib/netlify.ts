@@ -128,15 +128,28 @@ export async function getCurrentUser(): Promise<User | null> {
 
 /**
  * Upload video to Netlify Blob Storage
+ * Sends as base64 JSON for reliable parsing in Netlify Functions
  */
 export async function uploadVideo(videoBlob: Blob, filename: string): Promise<{ url: string; storageKey: string }> {
-  const formData = new FormData();
-  formData.append('video', videoBlob, filename);
-
   try {
+    // Convert blob to base64
+    const reader = new FileReader();
+    const base64Promise = new Promise<string>((resolve, reject) => {
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+    });
+    reader.readAsDataURL(videoBlob);
+    const base64 = await base64Promise;
+
     const response = await fetch(`${API_BASE}/upload-video`, {
       method: 'POST',
-      body: formData,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        videoBase64: base64,
+        filename,
+      }),
     });
 
     if (!response.ok) {
