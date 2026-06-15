@@ -30,20 +30,30 @@ export const handler: Handler = async (event) => {
       videoStorageKey,
     } = body;
 
-    // Validate required fields
-    if (!creatorName || !creatorEmail) {
+    // Validate required fields - name is required, email is optional for casual users
+    if (!creatorName || creatorName.trim() === '') {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: 'Name and email are required' }),
+        body: JSON.stringify({ error: 'Name is required' }),
       };
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(creatorEmail)) {
+    // Email validation only if provided
+    if (creatorEmail && creatorEmail.trim() !== '') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(creatorEmail)) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: 'Please provide a valid email address' }),
+        };
+      }
+    }
+
+    // Validate design object
+    if (!design || !design.baseType || !design.glazeType || !design.sprinklesType) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: 'Please provide a valid email address' }),
+        body: JSON.stringify({ error: 'Invalid donut design data' }),
       };
     }
 
@@ -63,7 +73,7 @@ export const handler: Handler = async (event) => {
       RETURNING id, status, created_at`,
       [
         creatorName,
-        creatorEmail,
+        creatorEmail || null,
         creatorPhone || null,
         creatorCity || null,
         creatorImage || null,

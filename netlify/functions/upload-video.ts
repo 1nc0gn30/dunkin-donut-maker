@@ -6,20 +6,44 @@ export const handler: Handler = async (event) => {
   }
 
   try {
-    const body = JSON.parse(event.body || '{}');
-    const { videoBase64, filename } = body;
+    // Handle FormData from frontend
+    const contentType = event.headers['content-type'] || event.headers['Content-Type'] || '';
+    let videoData: Buffer | null = null;
+    let filename = 'donut-video.webm';
+    let mimeType = 'video/webm';
 
-    if (!videoBase64) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'No video data provided' }),
-      };
+    if (contentType.includes('multipart/form-data')) {
+      // Parse FormData (Netlify Functions provides multiValueParts for multipart)
+      const parts = event.multiValueParts;
+      if (!parts || !parts.video) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: 'No video data provided' }),
+        };
+      }
+      const videoPart = parts.video[0];
+      videoData = Buffer.from(videoPart.data, 'base64');
+      filename = videoPart.filename || 'donut-video.webm';
+      mimeType = videoPart.contentType || 'video/webm';
+    } else {
+      // Fallback to JSON body (for backwards compatibility)
+      const body = JSON.parse(event.body || '{}');
+      const { videoBase64, filename: fname } = body;
+
+      if (!videoBase64) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: 'No video data provided' }),
+        };
+      }
+      videoData = Buffer.from(videoBase64.split(',')[1], 'base64');
+      filename = fname || 'donut-video.webm';
     }
 
     // Generate unique key
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 15);
-    const storageKey = `videos/${timestamp}-${randomId}-${filename || 'donut.mp4'}`;
+    const storageKey = `videos/${timestamp}-${randomId}-${filename}`;
 
     // In production, this would upload to Netlify Blob Storage
     // For local dev, return a placeholder URL
@@ -44,9 +68,8 @@ export const handler: Handler = async (event) => {
       consistency: 'strong',
     });
 
-    const buffer = Buffer.from(videoBase64.split(',')[1], 'base64');
-    await store.set(storageKey, buffer, {
-      contentType: 'video/mp4',
+    await store.set(storageKey, videoData, {
+      contentType: mimeType,
       metadata: {
         uploadedAt: new Date().toISOString(),
         originalName: filename,
