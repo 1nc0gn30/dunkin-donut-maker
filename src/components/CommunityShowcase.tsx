@@ -1,7 +1,7 @@
 import React from 'react';
 import { toggleLike } from '../lib/netlify';
 import { CommunityDonut } from '../types';
-import { Heart, Star, Award, Twitter, Facebook, Instagram, Share2, Video, Link2, Check } from 'lucide-react';
+import { Heart, Star, Award, Twitter, Facebook, Instagram, Share2, Video, Link2, Check, X } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface ShowcaseProps {
@@ -11,6 +11,16 @@ interface ShowcaseProps {
 
 export default function CommunityShowcase({ donuts, onLike }: ShowcaseProps) {
   const [copiedId, setCopiedId] = React.useState<string | null>(null);
+  const [selectedDonut, setSelectedDonut] = React.useState<CommunityDonut | null>(null);
+
+  React.useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedDonut(null);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
   const handleLike = async (id: string) => {
     try {
       // Try Netlify API first (requires auth)
@@ -87,7 +97,7 @@ export default function CommunityShowcase({ donuts, onLike }: ShowcaseProps) {
                     <div className="text-xs font-bold text-zinc-800">Chef {d.creatorName}</div>
                     <div className="text-[10px] text-zinc-500 uppercase">{new Date(d.createdAt).toLocaleDateString()}</div>
                     {(d.twitterHandle || d.instagramHandle || d.tiktokHandle) && (
-                      <div className="flex items-center gap-2 mt-0.5">
+                      <div className="flex items-center gap-2 mt-0.5 max-w-[140px] overflow-x-auto scrollbar-hide">
                         {d.twitterHandle && <a href={`https://x.com/${d.twitterHandle}`} target="_blank" rel="noopener noreferrer" className="text-[10px] text-[#1DA1F2] hover:underline">@{d.twitterHandle}</a>}
                         {d.instagramHandle && <a href={`https://instagram.com/${d.instagramHandle}`} target="_blank" rel="noopener noreferrer" className="text-[10px] text-[#C13584] hover:underline">@{d.instagramHandle}</a>}
                         {d.tiktokHandle && <a href={`https://tiktok.com/@${d.tiktokHandle}`} target="_blank" rel="noopener noreferrer" className="text-[10px] text-zinc-800 hover:underline">@{d.tiktokHandle}</a>}
@@ -105,16 +115,16 @@ export default function CommunityShowcase({ donuts, onLike }: ShowcaseProps) {
              </div>
 
              {d.videoUrl ? (
-               <div className="w-full h-[240px] md:h-[320px] bg-[#fff4ea] border-b border-purple-100 relative overflow-hidden group flex items-center justify-center">
+               <button onClick={() => setSelectedDonut(d)} className="w-full h-[240px] md:h-[320px] bg-[#fff4ea] border-b border-purple-100 relative overflow-hidden group flex items-center justify-center cursor-pointer" aria-label="Open donut video fullscreen">
                   <video src={d.videoUrl} autoPlay loop muted playsInline className="w-full h-full object-contain" />
                   <div className="absolute top-2 right-2 bg-black/60 text-white text-[9px] px-2 py-1 rounded-md font-bold flex items-center gap-1 uppercase tracking-widest backdrop-blur-sm">
                     <Video className="w-3 h-3" /> Authentic 3D Render
                   </div>
-               </div>
+               </button>
              ) : (
-                <div className="w-full h-[180px] bg-gradient-to-tr from-[#FF671F]/20 to-[#DA1A5F]/20 flex items-center justify-center border-b border-purple-100 relative overflow-hidden">
+                <button onClick={() => setSelectedDonut(d)} className="w-full h-[180px] bg-gradient-to-tr from-[#FF671F]/20 to-[#DA1A5F]/20 flex items-center justify-center border-b border-purple-100 relative overflow-hidden cursor-pointer" aria-label="Open donut details fullscreen">
                     <div className="w-24 h-24 rounded-full bg-white shadow-lg flex items-center justify-center text-3xl font-display font-black text-[#DA1A5F]">DD</div>
-                </div>
+                </button>
              )}
 
              <div className="flex-1 p-5 space-y-3">
@@ -149,7 +159,41 @@ export default function CommunityShowcase({ donuts, onLike }: ShowcaseProps) {
         {donuts.length === 0 && (
           <div className="text-center py-12 text-zinc-500 font-mono text-sm w-full">No community creations yet. Be the first to bake one!</div>
         )}
+
       </div>
+
+      {selectedDonut && (
+        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" onClick={() => setSelectedDonut(null)} role="dialog" aria-modal="true">
+          <button
+            onClick={() => setSelectedDonut(null)}
+            className="absolute top-4 right-4 text-white hover:text-[#FF671F] transition-colors cursor-pointer z-50"
+            aria-label="Close fullscreen"
+          >
+            <X className="w-8 h-8" />
+          </button>
+          <div className="max-w-full max-h-full flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+            {selectedDonut.videoUrl ? (
+              <video
+                src={selectedDonut.videoUrl}
+                autoPlay
+                loop
+                muted
+                playsInline
+                controls
+                className="max-w-full max-h-[80vh] rounded-lg shadow-2xl"
+              />
+            ) : (
+              <div className="w-[min(80vw,400px)] h-[min(80vw,400px)] rounded-full bg-gradient-to-tr from-[#FF671F]/30 to-[#DA1A5F]/30 flex items-center justify-center">
+                <div className="w-40 h-40 rounded-full bg-white shadow-xl flex items-center justify-center text-6xl font-display font-black text-[#DA1A5F]">DD</div>
+              </div>
+            )}
+            <div className="mt-4 text-center text-white">
+              <div className="font-display font-black text-2xl uppercase">{selectedDonut.design.icingMessage || 'The Mystery Special'}</div>
+              <div className="text-sm text-white/80">by Chef {selectedDonut.creatorName}</div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
