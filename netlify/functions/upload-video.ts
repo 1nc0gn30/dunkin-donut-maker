@@ -6,7 +6,6 @@ export const handler: Handler = async (event) => {
   }
 
   try {
-    // Parse JSON body with base64 video data
     const body = JSON.parse(event.body || '{}');
     const { videoBase64, filename } = body;
 
@@ -18,40 +17,27 @@ export const handler: Handler = async (event) => {
       };
     }
 
-    // Generate unique key
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 15);
     const originalFilename = filename || 'donut-video.webm';
     const storageKey = `videos/${timestamp}-${randomId}-${originalFilename}`;
 
-    // In production, this would upload to Netlify Blob Storage
-    // For local dev, return a placeholder URL
-    const isLocalDev = process.env.CONTEXT === 'dev' || !process.env.NETLIFY;
-    
-    if (isLocalDev) {
-      console.log('Local dev: Skipping blob upload, returning placeholder');
+    const { getStore } = await import('@netlify/blobs');
+    const store = getStore({ name: 'donut-videos' });
+
+    const base64Data = videoBase64.includes(',')
+      ? videoBase64.split(',')[1]
+      : videoBase64;
+
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    if (buffer.length === 0) {
       return {
-        statusCode: 200,
-        body: JSON.stringify({
-          url: `/placeholder/${storageKey}`,
-          storageKey,
-          local: true,
-        }),
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Empty video data' }),
       };
     }
 
-    // Production: Upload to Netlify Blob Storage
-    const { getStore } = await import('@netlify/blobs');
-    const store = getStore({
-      name: 'donut-videos',
-    });
-
-    // Strip data URL prefix if present (e.g., "data:video/webm;base64,")
-    const base64Data = videoBase64.includes(',') 
-      ? videoBase64.split(',')[1] 
-      : videoBase64;
-    
-    const buffer = Buffer.from(base64Data, 'base64');
     await store.set(storageKey, buffer, {
       metadata: {
         uploadedAt: new Date().toISOString(),
@@ -60,8 +46,7 @@ export const handler: Handler = async (event) => {
     });
 
     const url = `/.netlify/functions/get-video?key=${encodeURIComponent(storageKey)}`;
-
-    console.log('Video uploaded successfully:', url);
+    console.log('Video uploaded successfully:', url, 'size:', buffer.length);
 
     return {
       statusCode: 200,
@@ -74,9 +59,9 @@ export const handler: Handler = async (event) => {
     console.error('Upload error:', err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         error: 'Failed to upload video',
-        details: err instanceof Error ? err.message : String(err)
+        details: err instanceof Error ? err.message : String(err),
       }),
     };
   }

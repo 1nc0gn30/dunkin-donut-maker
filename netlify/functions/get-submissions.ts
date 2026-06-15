@@ -4,10 +4,15 @@ import { Client } from 'pg';
 // is not publicly playable. Rewrite it to use the get-video proxy.
 const normalizeVideoUrl = (url: string | null): string | null => {
   if (!url) return null;
-  const prefix = '/.netlify/blobs/donut-videos/';
-  if (url.startsWith(prefix)) {
-    const key = url.slice(prefix.length);
+  // Old raw blob URLs are not publicly playable; route through the proxy.
+  const blobPrefix = '/.netlify/blobs/donut-videos/';
+  if (url.startsWith(blobPrefix)) {
+    const key = url.slice(blobPrefix.length);
     return `/.netlify/functions/get-video?key=${encodeURIComponent(key)}`;
+  }
+  // Local-dev placeholder URLs won't work in production; drop them so the fallback image shows.
+  if (url.startsWith('/placeholder/')) {
+    return null;
   }
   return url;
 };
