@@ -1,5 +1,17 @@
 import { Handler } from '@netlify/functions';
 import { Client } from 'pg';
+// Backwards-compat: old submissions stored the raw Netlify Blobs URL, which
+// is not publicly playable. Rewrite it to use the get-video proxy.
+const normalizeVideoUrl = (url: string | null): string | null => {
+  if (!url) return null;
+  const prefix = '/.netlify/blobs/donut-videos/';
+  if (url.startsWith(prefix)) {
+    const key = url.slice(prefix.length);
+    return `/.netlify/functions/get-video?key=${encodeURIComponent(key)}`;
+  }
+  return url;
+};
+
 
 export const handler: Handler = async (event) => {
   const client = new Client({
@@ -43,7 +55,7 @@ export const handler: Handler = async (event) => {
         customToppings: row.design_custom_toppings || [],
         icingMessage: row.design_icing_message || '',
       },
-      videoUrl: row.video_url,
+      videoUrl: normalizeVideoUrl(row.video_url),
       likes: row.likes_count,
       createdAt: row.created_at,
       status: row.status,

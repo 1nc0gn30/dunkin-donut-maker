@@ -41,10 +41,9 @@ export const handler: Handler = async (event) => {
     }
 
     // Production: Upload to Netlify Blob Storage
-    const { createBlobStore } = await import('@netlify/blobs');
-    const store = createBlobStore({
+    const { getStore } = await import('@netlify/blobs');
+    const store = getStore({
       name: 'donut-videos',
-      consistency: 'strong',
     });
 
     // Strip data URL prefix if present (e.g., "data:video/webm;base64,")
@@ -54,14 +53,13 @@ export const handler: Handler = async (event) => {
     
     const buffer = Buffer.from(base64Data, 'base64');
     await store.set(storageKey, buffer, {
-      contentType: 'video/webm',
       metadata: {
         uploadedAt: new Date().toISOString(),
         originalName: originalFilename,
       },
     });
 
-    const url = `/.netlify/blobs/donut-videos/${storageKey}`;
+    const url = `/.netlify/functions/get-video?key=${encodeURIComponent(storageKey)}`;
 
     console.log('Video uploaded successfully:', url);
 
