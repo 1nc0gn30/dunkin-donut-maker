@@ -1,0 +1,6 @@
+{
+  "name": "Dunkin' Community Hub & Caffeine Lab",
+  "description": "An interactive employee-customer space with custom donut sprinkle makers, dynamic shoutouts, caffeine jitter simulations, and AI-powered caffeinated rant translators.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Custom CSS animations for humor/parody */
+@keyframes shake-1 {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -1px) rotate(-1deg); }
+  20% { transform: translate(-2px, 0px) rotate(0.5deg); }
+  30% { transform: translate(0px, 1px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 1.5px) rotate(-0.5deg); }
+  60% { transform: translate(-1.5px, 1px) rotate(0deg); }
+  75% { transform: translate(1px, 1px) rotate(-1deg); }
+  90% { transform: translate(-1px, -1px) rotate(0.5deg); }
+  100% { transform: translate(1px, -1px) rotate(0deg); }
+}
+
+@keyframes shake-2 {
+  0% { transform: translate(3px, 3px) rotate(0deg); }
+  10% { transform: translate(-3px, -3px) rotate(-1.5deg); }
+  20% { transform: translate(-4px, 0px) rotate(1.5deg); }
+  30% { transform: translate(0px, 3px) rotate(0deg); }
+  40% { transform: translate(3px, -3px) rotate(1.5deg); }
+  50% { transform: translate(-3px, 4px) rotate(-1.5deg); }
+  60% { transform: translate(-4px, 3px) rotate(0deg); }
+  75% { transform: translate(3px, 3px) rotate(-1.5deg); }
+  90% { transform: translate(-3px, -3px) rotate(1.5deg); }
+  100% { transform: translate(3px, -3px) rotate(0deg); }
+}
+
+@keyframes shake-3 {
+  0% { transform: translate(6px, 6px) rotate(-1deg); }
+  10% { transform: translate(-6px, -6px) rotate(-3deg); }
+  20% { transform: translate(-8px, 0px) rotate(3deg); }
+  30% { transform: translate(0px, 7px) rotate(0deg); }
+  45% { transform: translate(7px, -7px) rotate(3deg); }
+  60% { transform: translate(-7px, 8px) rotate(-3deg); }
+  75% { transform: translate(-8px, 7px) rotate(-1deg); }
+  90% { transform: translate(7px, 7px) rotate(3deg); }
+  100% { transform: translate(6px, -6px) rotate(0deg); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.tremor-lite {
+  animation: shake-1 0.4s infinite;
+}
+
+.tremor-medium {
+  animation: shake-2 0.25s infinite;
+}
+
+.tremor-extreme {
+  animation: shake-3 0.12s infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 1s ease-in-out infinite;
+}
+
+/* Color cycling keyframe style for ultra caffeinated state */
+@keyframes color-flash {
+  0% { text-shadow: 0 0 4px #FF671F; }
+  33% { text-shadow: 0 0 8px #DA1A5F; }
+  66% { text-shadow: 0 0 12px #FEF08A; }
+  100% { text-shadow: 0 0 4px #FF671F; }
+}
+
+.hyper-glow {
+  animation: color-flash 1s linear infinite;
+}
+
+/* Styled scrollbar for code/serial logs */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(218, 26, 95, 0.2);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(218, 26, 95, 0.4);
+}
