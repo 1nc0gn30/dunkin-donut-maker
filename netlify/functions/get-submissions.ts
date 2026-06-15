@@ -32,6 +32,9 @@ export const handler: Handler = async (event) => {
       creatorPhone: row.creator_phone,
       creatorCity: row.creator_city,
       creatorImage: row.creator_image_url,
+      twitterHandle: row.creator_twitter_handle,
+      instagramHandle: row.creator_instagram_handle,
+      tiktokHandle: row.creator_tiktok_handle,
       design: {
         baseType: row.design_base_type,
         glazeType: row.design_glaze_type,

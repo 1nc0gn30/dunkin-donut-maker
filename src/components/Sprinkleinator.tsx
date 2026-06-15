@@ -39,6 +39,9 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
   const [creatorPhone, setCreatorPhone] = useState('');
   const [creatorCity, setCreatorCity] = useState('');
   const [creatorImage, setCreatorImage] = useState<string | null>(null);
+  const [twitterHandle, setTwitterHandle] = useState('');
+  const [instagramHandle, setInstagramHandle] = useState('');
+  const [tiktokHandle, setTiktokHandle] = useState('');
 
   const [receipt, setReceipt] = useState<{ id: string; timestamp: string; qty: number } | null>(null);
   const [bakingProcess, setBakingProcess] = useState<string | null>(null);
@@ -834,6 +837,9 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
         creatorPhone: creatorPhone || null,
         creatorCity: creatorCity || null,
         creatorImage: creatorImage,
+        twitterHandle: twitterHandle || null,
+        instagramHandle: instagramHandle || null,
+        tiktokHandle: tiktokHandle || null,
         design: design,
         videoUrl: uploadedVideoUrl,
         videoStorageKey: videoStorageKey || undefined,
@@ -848,6 +854,9 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
           creatorPhone: creatorPhone || null,
           creatorCity: creatorCity || null,
           creatorImage: creatorImage,
+          twitterHandle: twitterHandle || null,
+          instagramHandle: instagramHandle || null,
+          tiktokHandle: tiktokHandle || null,
           design: design,
           videoUrl: uploadedVideoUrl,
           likes: 0,
@@ -993,6 +1002,29 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
                     placeholder="Your City (optional)" 
                     value={creatorCity}
                     onChange={(e) => setCreatorCity(e.target.value)}
+                    className="w-full bg-zinc-50 border-2 border-zinc-200 focus:border-[#FF671F] rounded-lg px-3 py-2.5 text-sm text-zinc-800 outline-none transition-colors font-medium"
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                  <input 
+                    type="text" 
+                    placeholder="X / Twitter Handle (optional)" 
+                    value={twitterHandle}
+                    onChange={(e) => setTwitterHandle(e.target.value.replace(/^@+/, '').replace(/\s/g, ''))}
+                    className="w-full bg-zinc-50 border-2 border-zinc-200 focus:border-[#FF671F] rounded-lg px-3 py-2.5 text-sm text-zinc-800 outline-none transition-colors font-medium"
+                  />
+                  <input 
+                    type="text" 
+                    placeholder="Instagram Handle (optional)" 
+                    value={instagramHandle}
+                    onChange={(e) => setInstagramHandle(e.target.value.replace(/^@+/, '').replace(/\s/g, ''))}
+                    className="w-full bg-zinc-50 border-2 border-zinc-200 focus:border-[#FF671F] rounded-lg px-3 py-2.5 text-sm text-zinc-800 outline-none transition-colors font-medium"
+                  />
+                  <input 
+                    type="text" 
+                    placeholder="TikTok Handle (optional)" 
+                    value={tiktokHandle}
+                    onChange={(e) => setTiktokHandle(e.target.value.replace(/^@+/, '').replace(/\s/g, ''))}
                     className="w-full bg-zinc-50 border-2 border-zinc-200 focus:border-[#FF671F] rounded-lg px-3 py-2.5 text-sm text-zinc-800 outline-none transition-colors font-medium"
                   />
                 </div>

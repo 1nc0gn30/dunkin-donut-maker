@@ -44,6 +44,9 @@ export interface CommunityDonut {
   creatorPhone?: string | null;
   creatorCity?: string | null;
   creatorImage?: string | null;
+  twitterHandle?: string | null;
+  instagramHandle?: string | null;
+  tiktokHandle?: string | null;
   design: DonutDesign;
   videoUrl?: string | null;
   likes: number;

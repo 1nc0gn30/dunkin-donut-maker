@@ -18,44 +18,10 @@ export default function App() {
         if (submissions.length > 0) {
           setCommunityDonuts(submissions);
         } else {
-          // Fallback to mock data if no submissions yet
-          setCommunityDonuts([
-            {
-              id: 'mock-1',
-              creatorName: 'Alex B.',
-              creatorEmail: 'alex@example.com',
-              creatorCity: 'Boston',
-              design: { baseType: 'blueberry', glazeType: 'orange', sprinklesType: 'rainbow', customToppings: ['raccoon', 'marshmallows'], icingMessage: 'GO TEAM!' },
-              likes: 124,
-              createdAt: new Date().toISOString(),
-              status: 'approved'
-            },
-            {
-              id: 'mock-2',
-              creatorName: 'Sammy T.',
-              creatorEmail: 'sammy@example.com',
-              creatorPhone: '555-0123',
-              creatorCity: 'Providence',
-              design: { baseType: 'chocolate', glazeType: 'matcha', sprinklesType: 'gold', customToppings: ['coffee_beans', 'oreo'], icingMessage: 'MONDAY FIX' },
-              likes: 89,
-              createdAt: new Date().toISOString(),
-              status: 'approved'
-            }
-          ]);
+          setCommunityDonuts([]);
         }
       } catch (err) {
         console.error('Failed to load submissions:', err);
-        // Use mock data on error
-        setCommunityDonuts([
-          {
-            id: 'mock-1',
-            creatorName: 'Alex B.',
-            design: { baseType: 'blueberry', glazeType: 'orange', sprinklesType: 'rainbow', customToppings: ['raccoon', 'marshmallows'], icingMessage: 'GO TEAM!' },
-            likes: 124,
-            createdAt: new Date().toISOString(),
-            status: 'approved'
-          }
-        ]);
       } finally {
         setLoading(false);
       }
@@ -63,7 +29,19 @@ export default function App() {
     loadSubmissions();
   }, []);
 
-  const handleSubmitDonut = (newDonut: CommunityDonut) => {
+  // Scroll to shared donut card when hash is present
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#donut-')) {
+      const el = document.getElementById(hash.slice(1));
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+      }
+    }
+  }, [communityDonuts]);
+
+  const handleSubmitDonut = (newDonut: CommunityDonut) =>{
     setCommunityDonuts(prev => [newDonut, ...prev]);
     setActiveTab('showcase');
   };

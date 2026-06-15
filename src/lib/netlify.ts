@@ -9,6 +9,9 @@ export interface DonutSubmission {
   id: string;
   creatorName: string;
   creatorImage?: string | null;
+  twitterHandle?: string | null;
+  instagramHandle?: string | null;
+  tiktokHandle?: string | null;
   design: {
     baseType: string;
     glazeType: string;
@@ -54,6 +57,9 @@ export async function submitDonut(data: {
   creatorPhone?: string | null;
   creatorCity?: string | null;
   creatorImage?: string | null;
+  twitterHandle?: string | null;
+  instagramHandle?: string | null;
+  tiktokHandle?: string | null;
   design: DonutSubmission['design'];
   videoUrl?: string | null;
   videoStorageKey?: string;

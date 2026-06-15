@@ -22,6 +22,9 @@ export const handler: Handler = async (event) => {
       creatorPhone,
       creatorCity,
       creatorImage,
+      twitterHandle,
+      instagramHandle,
+      tiktokHandle,
       design,
       videoUrl,
       videoStorageKey,
@@ -52,10 +55,11 @@ export const handler: Handler = async (event) => {
     const result = await client.query(
       `INSERT INTO donut_submissions (
         creator_name, creator_email, creator_phone, creator_city, creator_image_url,
+        creator_twitter_handle, creator_instagram_handle, creator_tiktok_handle,
         design_base_type, design_glaze_type, design_sprinkles_type,
         design_drizzle_type, design_custom_toppings, design_icing_message,
         video_url, video_storage_key, status, likes_count
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
       RETURNING id, status, created_at`,
       [
         creatorName,
@@ -63,6 +67,9 @@ export const handler: Handler = async (event) => {
         creatorPhone || null,
         creatorCity || null,
         creatorImage || null,
+        twitterHandle || null,
+        instagramHandle || null,
+        tiktokHandle || null,
         design.baseType,
         design.glazeType,
         design.sprinklesType,

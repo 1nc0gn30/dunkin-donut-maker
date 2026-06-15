@@ -1,7 +1,7 @@
 import React from 'react';
 import { toggleLike } from '../lib/netlify';
 import { CommunityDonut } from '../types';
-import { Heart, Star, Award, Twitter, Facebook, Instagram, Share2, Video } from 'lucide-react';
+import { Heart, Star, Award, Twitter, Facebook, Instagram, Share2, Video, Link2, Check } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface ShowcaseProps {
@@ -10,6 +10,7 @@ interface ShowcaseProps {
 }
 
 export default function CommunityShowcase({ donuts, onLike }: ShowcaseProps) {
+  const [copiedId, setCopiedId] = React.useState<string | null>(null);
   const handleLike = async (id: string) => {
     try {
       // Try Netlify API first (requires auth)
@@ -21,6 +22,40 @@ export default function CommunityShowcase({ donuts, onLike }: ShowcaseProps) {
       onLike(id);
     }
   };
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin + window.location.pathname : 'https://dunkin-donut-maker.netlify.app';
+
+  const shareText = (d: CommunityDonut) => {
+    const msg = d.design.icingMessage || 'The Mystery Special';
+    return `Check out this custom donut creation by Chef ${d.creatorName}: "${msg}" on the Dunkin' Donut Creator!`;
+  };
+
+  const handleShareTwitter = (d: CommunityDonut) => {
+    const url = `${baseUrl}#donut-${d.id}`;
+    const text = encodeURIComponent(shareText(d));
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(url)}`, '_blank', 'width=600,height=400');
+  };
+
+  const handleShareFacebook = (d: CommunityDonut) => {
+    const url = `${baseUrl}#donut-${d.id}`;
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank', 'width=600,height=400');
+  };
+
+  const handleShareInstagram = (d: CommunityDonut) => {
+    const caption = shareText(d) + ' ' + `${baseUrl}#donut-${d.id}`;
+    navigator.clipboard.writeText(caption).then(() => {
+      setCopiedId('instagram-' + d.id);
+      setTimeout(() => setCopiedId(null), 2000);
+    });
+  };
+
+  const handleCopyLink = (d: CommunityDonut) => {
+    const url = `${baseUrl}#donut-${d.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedId(d.id);
+      setTimeout(() => setCopiedId(null), 2000);
+    });
+  };
+
   return (
     <div className="bg-white rounded-2xl border-4 border-[#5B2C6F] overflow-hidden shadow-xl" id="community-showcase">
       <div className="bg-[#5B2C6F] px-6 py-4 flex justify-between items-center text-white">
@@ -37,7 +72,7 @@ export default function CommunityShowcase({ donuts, onLike }: ShowcaseProps) {
       <div className="p-6 md:p-8 bg-purple-50 flex flex-wrap gap-6 justify-center min-h-[400px]">
         {donuts.map((d, i) => (
            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}
-             key={d.id} className="w-full max-w-[340px] bg-white rounded-xl border-2 border-purple-200 shadow-sm overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
+             key={d.id} id={`donut-${d.id}`} className="w-full max-w-[340px] bg-white rounded-xl border-2 border-purple-200 shadow-sm overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
              
              <div className="p-4 border-b border-purple-100 flex items-center justify-between gap-3 bg-gradient-to-r from-purple-50 to-white">
                <div className="flex items-center gap-3">
@@ -51,14 +86,21 @@ export default function CommunityShowcase({ donuts, onLike }: ShowcaseProps) {
                   <div>
                     <div className="text-xs font-bold text-zinc-800">Chef {d.creatorName}</div>
                     <div className="text-[10px] text-zinc-500 uppercase">{new Date(d.createdAt).toLocaleDateString()}</div>
+                    {(d.twitterHandle || d.instagramHandle || d.tiktokHandle) && (
+                      <div className="flex items-center gap-2 mt-0.5">
+                        {d.twitterHandle && <a href={`https://x.com/${d.twitterHandle}`} target="_blank" rel="noopener noreferrer" className="text-[10px] text-[#1DA1F2] hover:underline">@{d.twitterHandle}</a>}
+                        {d.instagramHandle && <a href={`https://instagram.com/${d.instagramHandle}`} target="_blank" rel="noopener noreferrer" className="text-[10px] text-[#C13584] hover:underline">@{d.instagramHandle}</a>}
+                        {d.tiktokHandle && <a href={`https://tiktok.com/@${d.tiktokHandle}`} target="_blank" rel="noopener noreferrer" className="text-[10px] text-zinc-800 hover:underline">@{d.tiktokHandle}</a>}
+                      </div>
+                    )}
                   </div>
                </div>
 
                <div className="flex items-center gap-2">
-                 <button title="Share on Twitter" className="text-zinc-300 hover:text-[#1DA1F2] transition-colors cursor-pointer"><Twitter className="w-4 h-4" /></button>
-                 <button title="Share on Facebook" className="text-zinc-300 hover:text-[#4267B2] transition-colors cursor-pointer"><Facebook className="w-4 h-4" /></button>
-                 <button title="Share on Instagram" className="text-zinc-300 hover:text-[#C13584] transition-colors cursor-pointer"><Instagram className="w-4 h-4" /></button>
-                 <button title="Copy Link" className="text-zinc-300 hover:text-[#FF671F] transition-colors cursor-pointer"><Share2 className="w-4 h-4" /></button>
+                 <button onClick={() => handleShareTwitter(d)} title="Share on Twitter" className="text-zinc-300 hover:text-[#1DA1F2] transition-colors cursor-pointer"><Twitter className="w-4 h-4" /></button>
+                 <button onClick={() => handleShareFacebook(d)} title="Share on Facebook" className="text-zinc-300 hover:text-[#4267B2] transition-colors cursor-pointer"><Facebook className="w-4 h-4" /></button>
+                 <button onClick={() => handleShareInstagram(d)} title="Copy Instagram Caption" className="text-zinc-300 hover:text-[#C13584] transition-colors cursor-pointer relative"><Instagram className="w-4 h-4" />{copiedId === 'instagram-' + d.id && <span className="absolute -top-5 right-0 bg-black text-white text-[9px] px-1.5 py-0.5 rounded whitespace-nowrap">Copied!</span>}</button>
+                 <button onClick={() => handleCopyLink(d)} title="Copy Link" className="text-zinc-300 hover:text-[#FF671F] transition-colors cursor-pointer relative">{copiedId === d.id ? <Check className="w-4 h-4 text-green-500" /> : <Link2 className="w-4 h-4" />}{copiedId === d.id && <span className="absolute -top-5 right-0 bg-black text-white text-[9px] px-1.5 py-0.5 rounded whitespace-nowrap">Copied!</span>}</button>
                </div>
              </div>
 
