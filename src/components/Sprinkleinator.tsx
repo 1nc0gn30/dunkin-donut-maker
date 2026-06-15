@@ -973,7 +973,7 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
 
               <div className="bg-white border text-center border-zinc-200 rounded-xl p-4 md:text-center text-left">
                 <span className="block text-sm font-black text-zinc-800 uppercase mb-3">5. Add a warm message</span>
-                <input type="text" maxLength={15} placeholder="Smile! You're awesome!" value={design.icingMessage}
+                <input type="text" maxLength={80} placeholder="Smile! You're awesome!" value={design.icingMessage}
                   onChange={(e) => setDesign(prev => ({ ...prev, icingMessage: e.target.value }))}
                   className="w-full bg-zinc-50 border-2 border-zinc-200 focus:border-[#FF671F] rounded-lg px-4 py-3 text-sm text-zinc-800 md:text-center outline-none transition-colors font-bold uppercase tracking-wider"
                 />
