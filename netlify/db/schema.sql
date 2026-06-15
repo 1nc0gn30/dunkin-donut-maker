@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS donut_submissions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES users(id) ON DELETE SET NULL,
   creator_name TEXT NOT NULL,
-  creator_email TEXT NOT NULL,
+  creator_email TEXT,
   creator_phone TEXT,
   creator_city TEXT,
   creator_image_url TEXT,
