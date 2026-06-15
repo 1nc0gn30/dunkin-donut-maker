@@ -46,7 +46,7 @@
 Go to **Netlify Dashboard** → Site Settings → Environment Variables → Add:
 
 ```bash
-DATABASE_URL=postgresql://netlifydb_owner:npg_MYAkFCOvU9o2@ep-restless-base-ajp8ern3.c-3.us-east-2.db.netlify.com/netlifydb?sslmode=require
+DATABASE_URL=postgresql://netlifydb_owner:[YOUR_PASSWORD]@ep-restless-base-ajp8ern3.c-3.us-east-2.db.netlify.com/netlifydb?sslmode=require
 GEMINI_API_KEY=your_gemini_key_here
 ```
 
@@ -66,7 +66,7 @@ After deploy completes:
 3. **Test submission**: Create donut → fill form → submit
 4. **Check database**:
    ```bash
-   psql "postgresql://netlifydb_owner:npg_MYAkFCOvU9o2@ep-restless-base-ajp8ern3.c-3.us-east-2.db.netlify.com/netlifydb?sslmode=require" -c "SELECT id, creator_name, creator_email FROM donut_submissions ORDER BY created_at DESC LIMIT 1;"
+   psql "postgresql://netlifydb_owner:[YOUR_PASSWORD]@ep-restless-base-ajp8ern3.c-3.us-east-2.db.netlify.com/netlifydb?sslmode=require" -c "SELECT id, creator_name, creator_email FROM donut_submissions ORDER BY created_at DESC LIMIT 1;"
    ```
 
 ### 4. Check Logs (if issues)
@@ -78,7 +78,7 @@ netlify functions:log --watch
 ### 5. Approve Test Submission
 
 ```bash
-psql "postgresql://netlifydb_owner:npg_MYAkFCOvU9o2@ep-restless-base-ajp8ern3.c-3.us-east-2.db.netlify.com/netlifydb?sslmode=require" -c "UPDATE donut_submissions SET status = 'approved' WHERE status = 'pending' ORDER BY created_at DESC LIMIT 1;"
+psql "postgresql://netlifydb_owner:[YOUR_PASSWORD]@ep-restless-base-ajp8ern3.c-3.us-east-2.db.netlify.com/netlifydb?sslmode=require" -c "UPDATE donut_submissions SET status = 'approved' WHERE status = 'pending' ORDER BY created_at DESC LIMIT 1;"
 ```
 
 ---
