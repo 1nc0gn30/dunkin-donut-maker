@@ -167,12 +167,12 @@ export default function App() {
             </a>
 
             {/* Dunkin' */}
-            <div className="group flex flex-col items-center gap-2">
+            <a href="https://www.dunkindonuts.com" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2">
               <div className="w-12 h-12 md:w-14 md:h-14 bg-[#FF671F] rounded-full flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
                 <span className="text-white font-black text-sm md:text-lg">DD</span>
               </div>
               <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wide">Dunkin'</span>
-            </div>
+            </a>
 
             {/* Three.js */}
             <a href="https://threejs.org" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2">
@@ -222,8 +222,8 @@ export default function App() {
         {/* Legal & Links */}
         <div className="mt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
           <div className="text-center md:text-left space-y-1">
-            <p>© 2026 Dunkin' Donuts Parody Engineering Alliance</p>
-            <p className="text-[10px]">Not affiliated with Dunkin' Brands. Built for fun & creativity.</p>
+            <p>© 2026 Dunkin' Engineering Alliance</p>
+            <p className="text-[10px]">Built with ❤️ for the community</p>
           </div>
           <div className="flex items-center gap-4">
             <a href="https://dunkin-donut-maker.netlify.app" className="hover:text-[#FF671F] transition-colors">Home</a>

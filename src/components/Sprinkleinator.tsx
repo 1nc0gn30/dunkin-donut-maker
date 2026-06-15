@@ -677,14 +677,7 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
           // Draw the live WebGL scene right in the middle
           ctx.drawImage(renderer.domElement, 150, 200, 500, 466);
 
-          // Footer & Icing Message if available
-          ctx.fillStyle = '#DA1A5F';
-          ctx.font = 'bold 32px sans-serif';
-          if (metaRef.current.icingMessage) {
-            ctx.textAlign = 'center';
-            ctx.fillText(`"${metaRef.current.icingMessage}"`, 400, 720);
-          }
-          
+          // Footer section with avatar and name
           if (selfieImgRef.current) {
             ctx.save();
             ctx.beginPath();
