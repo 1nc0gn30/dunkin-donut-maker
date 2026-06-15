@@ -88,7 +88,8 @@ export const handler: Handler = async (event) => {
         design.icingMessage || '',
         videoUrl || null,
         videoStorageKey || null,
-        'pending',
+        // Auto-approve by default; set DONUT_SUBMISSION_MODERATION=true to require manual approval.
+        process.env.DONUT_SUBMISSION_MODERATION === 'true' ? 'pending' : 'approved',
         0,
       ]
     );
