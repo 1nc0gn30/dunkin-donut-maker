@@ -24,6 +24,7 @@ export default function App() {
               id: 'mock-1',
               creatorName: 'Alex B.',
               creatorEmail: 'alex@example.com',
+              creatorCity: 'Boston',
               design: { baseType: 'blueberry', glazeType: 'orange', sprinklesType: 'rainbow', customToppings: ['raccoon', 'marshmallows'], icingMessage: 'GO TEAM!' },
               likes: 124,
               createdAt: new Date().toISOString(),
@@ -34,6 +35,7 @@ export default function App() {
               creatorName: 'Sammy T.',
               creatorEmail: 'sammy@example.com',
               creatorPhone: '555-0123',
+              creatorCity: 'Providence',
               design: { baseType: 'chocolate', glazeType: 'matcha', sprinklesType: 'gold', customToppings: ['coffee_beans', 'oreo'], icingMessage: 'MONDAY FIX' },
               likes: 89,
               createdAt: new Date().toISOString(),
@@ -147,10 +149,97 @@ export default function App() {
         </div>
       </main>
 
-      {/* Funny Footnotes layout */}
-      <footer className="max-w-7xl mx-auto px-4 md:px-8 mt-12 text-center text-xs text-gray-400 space-y-1.5 font-mono">
-        <p>© 2026 Dunkin' Donuts Parody Engineering Alliance (Not affiliated, built for human joy and friendly shift fun).</p>
-        <p>Sharing our sweet smiles, high-fives, and happy baking all day long!</p>
+      {/* Enhanced Footer with Tech Stack */}
+      <footer className="max-w-7xl mx-auto px-4 md:px-8 mt-16 pb-8">
+        {/* Powered By Section */}
+        <div className="border-t border-gray-200 pt-8">
+          <p className="text-center text-xs font-bold text-gray-500 uppercase tracking-widest mb-6">Powered By Amazing Tech</p>
+          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8">
+            
+            {/* Netlify */}
+            <a href="https://www.netlify.com" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2">
+              <div className="w-12 h-12 md:w-14 md:h-14 bg-[#00C7B7] rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+                <svg viewBox="0 0 24 24" className="w-6 h-6 md:w-8 md:h-8 text-white" fill="currentColor">
+                  <path d="M12 0L23.066 21H0L12 0Z"/>
+                </svg>
+              </div>
+              <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wide">Netlify</span>
+            </a>
+
+            {/* Dunkin' */}
+            <div className="group flex flex-col items-center gap-2">
+              <div className="w-12 h-12 md:w-14 md:h-14 bg-[#FF671F] rounded-full flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+                <span className="text-white font-black text-sm md:text-lg">DD</span>
+              </div>
+              <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wide">Dunkin'</span>
+            </div>
+
+            {/* Three.js */}
+            <a href="https://threejs.org" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2">
+              <div className="w-12 h-12 md:w-14 md:h-14 bg-[#000000] rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+                <span className="text-white font-black text-[10px] md:text-xs">three.js</span>
+              </div>
+              <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wide">Three.js</span>
+            </a>
+
+            {/* Gemini */}
+            <a href="https://ai.google.dev/gemini-api" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2">
+              <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-[#4285F4] via-[#9B72CB] to-[#D96570] rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+                <svg viewBox="0 0 24 24" className="w-6 h-6 md:w-8 md:h-8 text-white" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                  <circle cx="12" cy="12" r="5"/>
+                </svg>
+              </div>
+              <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wide">Gemini AI</span>
+            </a>
+
+            {/* React */}
+            <a href="https://react.dev" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2">
+              <div className="w-12 h-12 md:w-14 md:h-14 bg-[#61DAFB] rounded-full flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+                <svg viewBox="0 0 24 24" className="w-6 h-6 md:w-8 md:h-8 text-white" fill="currentColor">
+                  <circle cx="12" cy="12" r="3"/>
+                  <ellipse cx="12" cy="12" rx="10" ry="4" stroke="currentColor" strokeWidth="2" fill="none" transform="rotate(30 12 12)"/>
+                  <ellipse cx="12" cy="12" rx="10" ry="4" stroke="currentColor" strokeWidth="2" fill="none" transform="rotate(150 12 12)"/>
+                  <ellipse cx="12" cy="12" rx="10" ry="4" stroke="currentColor" strokeWidth="2" fill="none" transform="rotate(90 12 12)"/>
+                </svg>
+              </div>
+              <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wide">React</span>
+            </a>
+
+            {/* Vite */}
+            <a href="https://vitejs.dev" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2">
+              <div className="w-12 h-12 md:w-14 md:h-14 bg-[#646CFF] rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+                <svg viewBox="0 0 24 24" className="w-6 h-6 md:w-8 md:h-8 text-white" fill="currentColor">
+                  <path d="M12 2L2 19h20L12 2zm0 4.5L17.5 17H6.5L12 6.5z"/>
+                </svg>
+              </div>
+              <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wide">Vite</span>
+            </a>
+
+          </div>
+        </div>
+
+        {/* Legal & Links */}
+        <div className="mt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+          <div className="text-center md:text-left space-y-1">
+            <p>© 2026 Dunkin' Donuts Parody Engineering Alliance</p>
+            <p className="text-[10px]">Not affiliated with Dunkin' Brands. Built for fun & creativity.</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <a href="https://dunkin-donut-maker.netlify.app" className="hover:text-[#FF671F] transition-colors">Home</a>
+            <span className="text-gray-300">•</span>
+            <a href="https://dunkin-donut-maker.netlify.app" className="hover:text-[#FF671F] transition-colors">Community</a>
+            <span className="text-gray-300">•</span>
+            <a href="https://www.netlify.com" className="hover:text-[#00C7B7] transition-colors">Deployed on Netlify</a>
+          </div>
+        </div>
+
+        {/* Fun Tagline */}
+        <div className="mt-6 text-center">
+          <p className="text-xs text-gray-400 font-mono">
+            ☕ Sharing our sweet smiles, high-fives, and happy baking all day long! 🍩
+          </p>
+        </div>
       </footer>
 
     </div>

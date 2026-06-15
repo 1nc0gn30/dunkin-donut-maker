@@ -37,6 +37,7 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
   const [creatorName, setCreatorName] = useState('');
   const [creatorEmail, setCreatorEmail] = useState('');
   const [creatorPhone, setCreatorPhone] = useState('');
+  const [creatorCity, setCreatorCity] = useState('');
   const [creatorImage, setCreatorImage] = useState<string | null>(null);
 
   const [receipt, setReceipt] = useState<{ id: string; timestamp: string; qty: number } | null>(null);
@@ -50,7 +51,7 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
 
   const mountRef = useRef<HTMLDivElement>(null);
   const designRef = useRef(design);
-  const metaRef = useRef({ creatorName, creatorEmail, creatorPhone, icingMessage: design.icingMessage });
+  const metaRef = useRef({ creatorName, creatorEmail, creatorPhone, creatorCity, icingMessage: design.icingMessage });
   const selfieImgRef = useRef<HTMLImageElement | null>(null);
   const recordCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const autoSpinRef = useRef(true);
@@ -59,8 +60,8 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
 
   useEffect(() => {
     designRef.current = design;
-    metaRef.current = { creatorName, creatorEmail, creatorPhone, icingMessage: design.icingMessage };
-  }, [design, creatorName, creatorEmail, creatorPhone]);
+    metaRef.current = { creatorName, creatorEmail, creatorPhone, creatorCity, icingMessage: design.icingMessage };
+  }, [design, creatorName, creatorEmail, creatorPhone, creatorCity]);
 
   const handleImageUploadDataUrl = (dataUrl: string) => {
     setCreatorImage(dataUrl);
@@ -838,6 +839,7 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
         creatorName: creatorName || 'Anonymous Fan',
         creatorEmail: creatorEmail || null,
         creatorPhone: creatorPhone || null,
+        creatorCity: creatorCity || null,
         creatorImage: creatorImage,
         design: design,
         videoUrl: uploadedVideoUrl,
@@ -851,6 +853,7 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
           creatorName: creatorName || 'Anonymous Fan',
           creatorEmail: creatorEmail || null,
           creatorPhone: creatorPhone || null,
+          creatorCity: creatorCity || null,
           creatorImage: creatorImage,
           design: design,
           videoUrl: uploadedVideoUrl,
@@ -977,7 +980,7 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
               <div className="bg-white border text-center border-zinc-200 rounded-xl p-4 md:text-center text-left">
                 <span className="block text-sm font-black text-zinc-800 uppercase mb-3">6. Chef Contact Info</span>
                 <p className="text-xs text-zinc-500 mb-3">We'll only use this to contact you if you win or for competition updates!</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                   <input 
                     type="email" 
                     placeholder="Your Email *" 
@@ -990,6 +993,13 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
                     placeholder="Your Phone (optional)" 
                     value={creatorPhone}
                     onChange={(e) => setCreatorPhone(e.target.value)}
+                    className="w-full bg-zinc-50 border-2 border-zinc-200 focus:border-[#FF671F] rounded-lg px-3 py-2.5 text-sm text-zinc-800 outline-none transition-colors font-medium"
+                  />
+                  <input 
+                    type="text" 
+                    placeholder="Your City (optional)" 
+                    value={creatorCity}
+                    onChange={(e) => setCreatorCity(e.target.value)}
                     className="w-full bg-zinc-50 border-2 border-zinc-200 focus:border-[#FF671F] rounded-lg px-3 py-2.5 text-sm text-zinc-800 outline-none transition-colors font-medium"
                   />
                 </div>

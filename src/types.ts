@@ -42,6 +42,7 @@ export interface CommunityDonut {
   creatorName: string;
   creatorEmail?: string | null;
   creatorPhone?: string | null;
+  creatorCity?: string | null;
   creatorImage?: string | null;
   design: DonutDesign;
   videoUrl?: string | null;

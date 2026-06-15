@@ -1,47 +1,36 @@
 import { Handler } from '@netlify/functions';
-import { createClient } from '@netlify/db';
+import { Client } from 'pg';
 
 export const handler: Handler = async (event) => {
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+  });
+
   try {
-    const db = createClient();
+    console.log('Get submissions function invoked');
+    await client.connect();
     
-    // Get approved submissions with user info, ordered by creation date
-    const { data, error } = await db
-      .from('donut_submissions')
-      .select(`
-        id,
-        creator_name,
-        creator_image_url,
-        design_base_type,
-        design_glaze_type,
-        design_sprinkles_type,
-        design_drizzle_type,
-        design_custom_toppings,
-        design_icing_message,
-        video_url,
-        status,
-        likes_count,
-        created_at,
-        users (
-          display_name,
-          avatar_url
-        )
-      `)
-      .eq('status', 'approved')
-      .order('created_at', { ascending: false });
+    console.log('Querying approved submissions...');
+    const result = await client.query(
+      `SELECT 
+        id, creator_name, creator_email, creator_phone, creator_city, creator_image_url,
+        design_base_type, design_glaze_type, design_sprinkles_type,
+        design_drizzle_type, design_custom_toppings, design_icing_message,
+        video_url, status, likes_count, created_at
+      FROM donut_submissions
+      WHERE status = 'approved'
+      ORDER BY created_at DESC`
+    );
 
-    if (error) {
-      console.error('Database error:', error);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'Failed to fetch submissions' }),
-      };
-    }
+    console.log(`Found ${result.rows.length} approved submissions`);
 
-    // Transform to match frontend expected format
-    const submissions = data.map((row: any) => ({
+    const submissions = result.rows.map((row) => ({
       id: row.id,
       creatorName: row.creator_name,
+      creatorEmail: row.creator_email,
+      creatorPhone: row.creator_phone,
+      creatorCity: row.creator_city,
       creatorImage: row.creator_image_url,
       design: {
         baseType: row.design_base_type,
@@ -65,7 +54,12 @@ export const handler: Handler = async (event) => {
     console.error('Handler error:', err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error' }),
+      body: JSON.stringify({ 
+        error: 'Failed to fetch submissions',
+        details: err instanceof Error ? err.message : String(err),
+      }),
     };
+  } finally {
+    await client.end();
   }
 };

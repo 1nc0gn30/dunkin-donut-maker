@@ -1,16 +1,26 @@
 import { Handler } from '@netlify/functions';
+import { Client } from 'pg';
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+  });
+
   try {
+    console.log('Submit donut function invoked');
     const body = JSON.parse(event.body || '{}');
+    console.log('Request body:', body);
+    
     const {
       creatorName,
       creatorEmail,
       creatorPhone,
+      creatorCity,
       creatorImage,
       design,
       videoUrl,
@@ -34,62 +44,46 @@ export const handler: Handler = async (event) => {
       };
     }
 
-    // Check if Netlify DB is available
-    const isLocalDev = process.env.CONTEXT === 'dev' || !process.env.NETLIFY;
+    // Connect and insert
+    console.log('Connecting to database...');
+    await client.connect();
     
-    if (isLocalDev) {
-      console.log('Local dev: Skipping DB insert, returning mock response');
-      console.log('Submission data:', { creatorName, creatorEmail, creatorPhone, design });
-      return {
-        statusCode: 201,
-        body: JSON.stringify({
-          id: `local-${Date.now()}`,
-          status: 'pending',
-          message: 'Submission created (local dev mode)',
-        }),
-      };
-    }
+    console.log('Inserting submission...');
+    const result = await client.query(
+      `INSERT INTO donut_submissions (
+        creator_name, creator_email, creator_phone, creator_city, creator_image_url,
+        design_base_type, design_glaze_type, design_sprinkles_type,
+        design_drizzle_type, design_custom_toppings, design_icing_message,
+        video_url, video_storage_key, status, likes_count
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+      RETURNING id, status, created_at`,
+      [
+        creatorName,
+        creatorEmail,
+        creatorPhone || null,
+        creatorCity || null,
+        creatorImage || null,
+        design.baseType,
+        design.glazeType,
+        design.sprinklesType,
+        design.drizzleType || 'none',
+        design.customToppings || [],
+        design.icingMessage || '',
+        videoUrl || null,
+        videoStorageKey || null,
+        'pending',
+        0,
+      ]
+    );
 
-    // Production: Insert into Netlify DB
-    const { createClient } = await import('@netlify/db');
-    const db = createClient();
-    const userId = event.headers['x-netlify-user-id'] || null;
-
-    const { data, error } = await db
-      .from('donut_submissions')
-      .insert({
-        user_id: userId,
-        creator_name: creatorName,
-        creator_email: creatorEmail,
-        creator_phone: creatorPhone,
-        creator_image_url: creatorImage,
-        design_base_type: design.baseType,
-        design_glaze_type: design.glazeType,
-        design_sprinkles_type: design.sprinklesType,
-        design_drizzle_type: design.drizzleType || 'none',
-        design_custom_toppings: design.customToppings || [],
-        design_icing_message: design.icingMessage,
-        video_url: videoUrl,
-        video_storage_key: videoStorageKey,
-        status: 'pending',
-        likes_count: 0,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Database error:', error);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'Failed to create submission', details: error.message }),
-      };
-    }
-
+    const row = result.rows[0];
+    console.log('Submission created:', row.id);
+    
     return {
       statusCode: 201,
       body: JSON.stringify({
-        id: data.id,
-        status: 'pending',
+        id: row.id,
+        status: row.status,
         message: 'Submission created successfully',
       }),
     };
@@ -99,8 +93,10 @@ export const handler: Handler = async (event) => {
       statusCode: 500,
       body: JSON.stringify({ 
         error: 'Internal server error',
-        details: err instanceof Error ? err.message : String(err)
+        details: err instanceof Error ? err.message : String(err),
       }),
     };
+  } finally {
+    await client.end();
   }
 };

@@ -52,6 +52,7 @@ export async function submitDonut(data: {
   creatorName: string;
   creatorEmail?: string | null;
   creatorPhone?: string | null;
+  creatorCity?: string | null;
   creatorImage?: string | null;
   design: DonutSubmission['design'];
   videoUrl?: string | null;
