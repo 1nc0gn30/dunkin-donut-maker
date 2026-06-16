@@ -93,10 +93,10 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
     const width = mountRef.current.clientWidth || 300;
     const height = mountRef.current.clientHeight || 280;
 
-    // Create offline canvas for video export processing (small = fast upload)
+    // Create offline canvas for video export processing (sized 800x800 to fit full layout)
     const rc = document.createElement('canvas');
-    rc.width = 480;
-    rc.height = 480;
+    rc.width = 800;
+    rc.height = 800;
     recordCanvasRef.current = rc;
 
     const scene = new THREE.Scene();
@@ -677,8 +677,30 @@ export default function Sprinkleinator({ onSubmit }: SprinkleinatorProps) {
           ctx.font = '800 36px sans-serif';
           ctx.fillText("COMMUNITY CREATION", 400, 180);
 
-          // Draw the live WebGL scene right in the middle
-          ctx.drawImage(renderer.domElement, 150, 200, 500, 466);
+          // Draw the live WebGL scene right in the middle, preserving its aspect ratio to show the whole scene properly
+          const sw = renderer.domElement.width;
+          const sh = renderer.domElement.height;
+          const sAspect = sw / sh;
+          const dw = 500;
+          const dh = 466;
+          const dx = 150;
+          const dy = 200;
+          let targetW = dw;
+          let targetH = dh;
+          let targetX = dx;
+          let targetY = dy;
+
+          if (sAspect > dw / dh) {
+            // Source is wider: fit width, scale down height, center vertically
+            targetH = dw / sAspect;
+            targetY = dy + (dh - targetH) / 2;
+          } else {
+            // Source is taller: fit height, scale down width, center horizontally
+            targetW = dh * sAspect;
+            targetX = dx + (dw - targetW) / 2;
+          }
+
+          ctx.drawImage(renderer.domElement, targetX, targetY, targetW, targetH);
 
           // Footer section with avatar and name
           if (selfieImgRef.current) {
