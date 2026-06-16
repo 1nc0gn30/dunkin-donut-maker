@@ -194,6 +194,16 @@ export default function App() {
               <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wide">Vite</span>
             </a>
 
+            {/* Supabase */}
+            <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2">
+              <div className="w-12 h-12 md:w-14 md:h-14 bg-[#3ECF8E] rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+                <svg viewBox="0 0 24 24" className="w-6 h-6 md:w-8 md:h-8 text-white" fill="currentColor">
+                  <path d="M12 2L2 12h8v8l10-10h-8V2z"/>
+                </svg>
+              </div>
+              <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wide">Supabase</span>
+            </a>
+
           </div>
         </div>
 
